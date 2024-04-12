@@ -1,0 +1,6 @@
+{
+    "randomChanceSamplingCount" : 8,
+    "depth" : 6,
+    "montonicityWeight" : 2,
+    "emptinessWeight" : 1.5
+}

@@ -1,10 +1,12 @@
 import copy
+import os
 import numpy as np
 class SimulatedBoard:
     # takes in board, has operations like getPossibleRandomTileSpawnStates, getPossibleMoveStates
     def __init__(self, board):
         self.board = board
-    def getRandomChanceSamplePossibleRandomTileSpawnStates(self, numSamples):
+    def getRandomChanceSamplePossibleRandomTileSpawnStates(self):
+        numSamples = int(os.environ.get("randomChanceSamplingCount"))
         # .9 chance of 2, .1 chance of 4
         emptyTiles = []
         for i in range(4):
@@ -70,8 +72,7 @@ class SimulatedBoard:
         if(count == 0):
             return 0
         else:
-            print(monontonicityScore)
-            return (1.5 * count) + (2*monontonicityScore)
+            return (float(os.environ.get("emptinessWeight")) * count) + (float(os.environ.get("montonicityWeight")) * monontonicityScore)
     # def evaluate(self):
     #     # test heuristic, just all empty tiles
     #     # add prioritizing monotonicity to top right corner
