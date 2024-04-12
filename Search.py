@@ -34,7 +34,7 @@ class Expectimax:
                 return maxChar
             return maxVal
         else:
-            randomTileSpawns = board.getRandomChanceSamplePossibleRandomTileSpawnStates(10)
+            randomTileSpawns = board.getRandomChanceSamplePossibleRandomTileSpawnStates(6)
             sum = 0
             count = 0
             for state in randomTileSpawns:

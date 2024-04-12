@@ -45,12 +45,43 @@ class SimulatedBoard:
         return moveMap
     def evaluate(self):
         # test heuristic, just all empty tiles
+        # add prioritizing monotonicity to top right corner
+        monotonicRows = set([0,1,2,3])
+        monotonicCols = set([0,1,2,3])
         count = 0
+        maxNum = 0
         for i in range(4):
             for j in range(4):
+                maxNum = max(maxNum, self.board[i][j])
                 if self.board[i][j] == 0:
                     count += 1
-        return count
+                if j > 0:
+                    if not (self.board[i][j] >= self.board[i][j - 1] or self.board[i][j] == 0) and j in monotonicCols:
+                        monotonicCols.remove(j)
+                    if not (self.board[j][i] >= self.board[j - 1][i] and self.board[j][i] != 0) and j in monotonicRows:
+                        monotonicRows.remove(j)
+        monontonicityScore = 0
+        for i in monotonicCols:
+            monontonicityScore += i
+        for i in monotonicRows:
+            monontonicityScore += i
+        if(self.board[3][3] == maxNum):
+            monontonicityScore += 2
+        if(count == 0):
+            return 0
+        else:
+            print(monontonicityScore)
+            return (1.5 * count) + (2*monontonicityScore)
+    # def evaluate(self):
+    #     # test heuristic, just all empty tiles
+    #     # add prioritizing monotonicity to top right corner
+    #     count = 0
+    #     for i in range(4):
+    #         for j in range(4):
+    #             if self.board[i][j] == 0:
+    #                 count += 1
+    #     print(count)
+    #     return count
     def slideLeft(board):
         newBoard = copy.deepcopy(board)
         moved = False
@@ -113,4 +144,3 @@ class SimulatedBoard:
         if not (result is None):
             return np.rot90(result, 3)
         return None
-    
