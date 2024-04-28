@@ -1,6 +1,7 @@
 {
-    "randomChanceSamplingCount" : 8,
-    "depth" : 6,
-    "montonicityWeight" : 2,
-    "emptinessWeight" : 1.5
+    "randomChanceSamplingCount" : 6,
+    "depth" : 7,
+    "montonicityWeight" : 1.7,
+    "emptinessWeight" : 2,
+    "heuristic" : "default"
 }

@@ -1,11 +1,19 @@
 import copy
 import os
+import math
 import numpy as np
+sArr = [
+    [2**1, 2**2, 2**3, 2**4],
+    [2**8, 2**7, 2**6, 2**5],
+    [2**9,2**10,2**11,2**12],
+    [2**16, 2**15, 2**14, 2**13]]
 class SimulatedBoard:
     # takes in board, has operations like getPossibleRandomTileSpawnStates, getPossibleMoveStates
     def __init__(self, board):
         self.board = board
-    def getRandomChanceSamplePossibleRandomTileSpawnStates(self):
+    def getMaxTile(self):
+        return np.max(self.board)
+    def getRandomChanceSample(self):
         numSamples = int(os.environ.get("randomChanceSamplingCount"))
         # .9 chance of 2, .1 chance of 4
         emptyTiles = []
@@ -45,7 +53,7 @@ class SimulatedBoard:
         if not (slideDown is None):
             moveMap["D"] = SimulatedBoard(slideDown)
         return moveMap
-    def evaluate(self):
+    def defaultEvaluate(self):
         # test heuristic, just all empty tiles
         # add prioritizing monotonicity to top right corner
         monotonicRows = set([0,1,2,3])
@@ -72,17 +80,28 @@ class SimulatedBoard:
         if(count == 0):
             return 0
         else:
+            if self.getMaxTile() == 2048:
+                return math.inf 
             return (float(os.environ.get("emptinessWeight")) * count) + (float(os.environ.get("montonicityWeight")) * monontonicityScore)
-    # def evaluate(self):
-    #     # test heuristic, just all empty tiles
-    #     # add prioritizing monotonicity to top right corner
-    #     count = 0
-    #     for i in range(4):
-    #         for j in range(4):
-    #             if self.board[i][j] == 0:
-    #                 count += 1
-    #     print(count)
-    #     return count
+    
+    def sEvaluate(self):
+        count = 0
+        heuristic = 0
+        for i in range(4):
+            for j in range(4):
+                heuristic += sArr[i][j] * self.board[i][j]
+                if self.board[i][j] == 0:
+                    count += 1
+                
+        if(count == 0):
+            return 0
+        else:
+            return heuristic
+    def evaluate(self):
+        if(os.environ.get("heuristic") == "sHeuristic"):
+            return self.sEvaluate()
+        else:
+            return self.defaultEvaluate()
     def slideLeft(board):
         newBoard = copy.deepcopy(board)
         moved = False
@@ -145,3 +164,57 @@ class SimulatedBoard:
         if not (result is None):
             return np.rot90(result, 3)
         return None
+    # def slideUp(board):
+    #     board = np.array(board)
+    #     newBoard = np.zeros_like(board)
+    #     moved = False
+
+    #     for colIndex in range(4):
+    #         column = [x for x in board[:, colIndex] if x != 0]
+    #         newColumn = []
+    #         while len(column) > 0:
+    #             if len(column) == 1:
+    #                 newColumn.append(column.pop(0))
+    #             else:
+    #                 element = column.pop(0)
+    #                 if column[0] == element:
+    #                     column.pop(0)
+    #                     newColumn.append(element * 2)
+    #                 else:
+    #                     newColumn.append(element)
+    #         newColumn += [0] * (4 - len(newColumn))
+    #         if not np.array_equal(newColumn, board[:, colIndex]):
+    #             moved = True
+    #         newBoard[:, colIndex] = newColumn
+        
+    #     if moved:
+    #         return newBoard
+    #     return None
+
+    # def slideDown(board):
+    #     board = np.array(board)
+    #     newBoard = np.zeros_like(board)
+    #     moved = False
+
+    #     for colIndex in range(4):
+    #         column = [x for x in board[:, colIndex] if x != 0]
+    #         newColumn = []
+    #         while len(column) > 0:
+    #             if len(column) == 1:
+    #                 newColumn = [column.pop()] + newColumn
+    #             else:
+    #                 element = column.pop()
+    #                 if len(column) > 0 and column[-1] == element:
+    #                     column.pop()
+    #                     newColumn = [element * 2] + newColumn
+    #                 else:
+    #                     newColumn = [element] + newColumn
+    #         padding = [0] * (4 - len(newColumn))
+    #         newColumn = padding + newColumn
+    #         if not np.array_equal(newColumn, board[:, colIndex]):
+    #             moved = True
+    #         newBoard[:, colIndex] = newColumn
+        
+    #     if moved:
+    #         return newBoard
+    #     return None

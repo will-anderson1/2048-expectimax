@@ -10,6 +10,7 @@ class WebManager:
         options = webdriver.ChromeOptions()
         options.add_argument(r"user-data-dir=/Users/will/Library/Application Support/Google/Chrome/Default/")
         options.add_argument(r"--profile-directory=Default")
+        options.add_argument("--incognito")
         driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
         driver.set_page_load_timeout(60)
         driver.get("https://play2048.co/")
@@ -33,6 +34,22 @@ class WebManager:
     def doMove(self, move):
         self.driver.find_element(By.TAG_NAME, "body").send_keys(self.moveMap[move])
         self.updateBoard()
+    def refresh(self):
+        # self.driver.find_element(By.TAG_NAME,'body').send_keys(Keys.COMMAND + 'r')
+        print("REFRESHING PAGE")
+        self.driver.Close()
+        options = webdriver.ChromeOptions()
+        options.add_argument(r"user-data-dir=/Users/will/Library/Application Support/Google/Chrome/Default/")
+        options.add_argument(r"--profile-directory=Default")
+        options.add_argument("--incognito")
+        self.driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
+        self.driver.set_page_load_timeout(60)
+        self.driver.get("https://play2048.co/")
+        time.sleep(10)
+        self.board = [[0, 0, 0, 0],[0, 0, 0, 0],[0, 0, 0, 0],[0, 0, 0, 0]]
+        self.updateBoard()
+    def getScore(self):
+        return self.driver.find_element(By.CLASS_NAME, "score-container").text.strip()
     def __init__(self):
         self.makeDriver()
         time.sleep(0.2)
